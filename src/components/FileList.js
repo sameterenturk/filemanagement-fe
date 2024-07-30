@@ -1,41 +1,62 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 
-const FileList = () => {
-  const [file, setFile] = useState();
+const FileList = ({ onSelectFile }) => {
+  const [files, setFiles] = useState([]);
 
   useEffect(() => {
-    // API çağrısını yapmadan önce localStorage'dan JWT token'ını alıyoruz.
-
-    // API'ye GET isteği gönderiyoruz.
-    axios
-      .get("http://localhost:8080/api/files/getFile/1", {
-        headers: {
-          // Authorization başlığına JWT token'ı ekliyoruz.
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzYW1ldCIsImV4cCI6MTcyMjM1NjExNSwiaWF0IjoxNzIyMzM4MTE1fQ.28NzqdlnxAjA0g1XC1bEuAC-vdOj-qgNUT7wGOv6uK0`,
-        },
-      })
+    fetch("http://localhost:8080/api/files/listFiles", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzYW1ldCIsImV4cCI6MTcyMjM4NjI3NCwiaWF0IjoxNzIyMzY4Mjc0fQ.aGqGpFZkfIecPIyBUAgnxSwMeW81RGgwXwMIrKhANv0`,
+        "Content-Type": "application/json",
+      },
+    })
       .then((response) => {
-        // API'den gelen dosya listesini state'e kaydediyoruz.
-        console.log(response.data);
-        setFile(response.data);
-        console.log(response.data);
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setFiles(data);
       })
       .catch((error) => {
         console.error("There was an error fetching the files!", error);
       });
   }, []);
 
+  const handleDelete = (id) => {
+    fetch(`http://localhost:8080/api/files/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzYW1ldCIsImV4cCI6MTcyMjM4NjI3NCwiaWF0IjoxNzIyMzY4Mjc0fQ.aGqGpFZkfIecPIyBUAgnxSwMeW81RGgwXwMIrKhANv0`,
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        setFiles(files.filter((file) => file.id !== id));
+      })
+      .catch((error) => {
+        console.error("There was an error deleting the file!", error);
+      });
+  };
+
   return (
     <div>
       <h2>Files</h2>
       <ul>
-        <li key={file.id}>
-          <p>Name: {file.name}</p>
-          <p>Size: {file.size} bytes</p>
-          <p>Extension: {file.extension}</p>
-          <p>Path: {file.path}</p>
-        </li>
+        {files.map((file) => (
+          <li key={file.id}>
+            <p>Name: {file.name}</p>
+            <p>Size: {file.size} bytes</p>
+            <p>Extension: {file.extension}</p>
+            <button onClick={() => onSelectFile(file.id)}>View Details</button>
+            <button onClick={() => handleDelete(file.id)}>Delete</button>
+          </li>
+        ))}
       </ul>
     </div>
   );

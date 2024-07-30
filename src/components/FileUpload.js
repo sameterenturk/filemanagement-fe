@@ -16,7 +16,7 @@ const FileUpload = () => {
       .post("http://localhost:8080/api/files/upload", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzYW1ldCIsImV4cCI6MTcyMjM1NjExNSwiaWF0IjoxNzIyMzM4MTE1fQ.28NzqdlnxAjA0g1XC1bEuAC-vdOj-qgNUT7wGOv6uK0`,
+          Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzYW1ldCIsImV4cCI6MTcyMjM4MTM0MSwiaWF0IjoxNzIyMzYzMzQxfQ.bqqeq8gG5FtfiVXiHr5jQtc01_lM5dcjt2iKw47LgrE`,
         },
       })
       .then((response) => {
